@@ -1,5 +1,5 @@
 chrome.runtime.onInstalled.addListener(function() {
-    // this is a map from ID to URL
+    // this is a map from ID to name
     open = {};
     
     bookmarks = {reddit: "https://reddit.com", 
@@ -15,7 +15,6 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
         var currBookmarks = result.bookmarks;
         var currName = open[tabId];
         currBookmarks[currName] = changeInfo.url;
-        console.log(currBookmarks);
         chrome.storage.sync.set({"bookmarks": currBookmarks});
       });
   }
@@ -31,6 +30,12 @@ chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
 
 function openTab(elem, url, name){
     elem.addEventListener("click", function() {
+      
+      // check if tab open
+      if (isTabOpen(name)) {
+          return;
+      }
+
       // if the link button is clicked
       var newTab = url;
       chrome.tabs.create({url: newTab}, function(tab) { 
@@ -38,4 +43,27 @@ function openTab(elem, url, name){
           open[tab.id] = name;
       });
     });
+}
+
+function addBookmark(name, url) {
+  chrome.storage.sync.get(["bookmarks"], function(result) {
+    currBookmarks = result.bookmarks;
+    currBookmarks[name] = url;
+    chrome.storage.sync.set({"bookmarks": currBookmarks});
+  });
+}
+
+function removeBookmark(elem, name, callback) {
+    elem.addEventListener("click", function() {
+      chrome.storage.sync.get(["bookmarks"], function(result) {
+        currBookmarks = result.bookmarks;
+        delete currBookmarks[name];
+        chrome.storage.sync.set({"bookmarks": currBookmarks});
+        callback();
+      });
+    });
+}
+
+function isTabOpen(name) {
+  return (Object.values(open).indexOf(name) > -1)
 }
