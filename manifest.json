@@ -9,7 +9,7 @@
   },
   "permissions": ["storage", "tabs"],
   "background": {
-    "persistent": false,
+    "persistent": true,
     "scripts": ["background.js"]
   }
 }
