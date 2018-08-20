@@ -10,6 +10,13 @@ chrome.runtime.onInstalled.addListener(function() {
 
 // when bookmark tabs are updated, open obj is also updated
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+  if (open.hasOwnProperty(tabId) && changeInfo.status == "complete") {
+      // change the favicon and title
+      chrome.tabs.executeScript(tabId, {file: 'contentScript.js'}, function() {
+        chrome.tabs.sendMessage(tabId, {tabName: open[tabId],
+                                        fav: chrome.runtime.getURL("icons/favicon.ico")});
+      });
+  }
   if (changeInfo.url && open.hasOwnProperty(tabId)) {
       chrome.storage.sync.get(["bookmarks"], function(result) {
         var currBookmarks = result.bookmarks;
