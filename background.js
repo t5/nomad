@@ -40,15 +40,21 @@ function openTab(elem, url, name){
       
       // check if tab open
       if (isTabOpen(name)) {
+        // make tab active
+        var clickedTabId = Object.entries(open).find(i => i[1] === name);
+        chrome.tabs.get(parseInt(clickedTabId[0], 10), function(tab) {
+          chrome.tabs.update(tab.id, {highlighted: true});
           return;
+        });
       }
-
-      // if the link button is clicked
-      var newTab = url;
-      chrome.tabs.create({url: newTab}, function(tab) { 
-        // after creating the tab, add it's ID and URL to open
-          open[tab.id] = name;
-      });
+      else {
+        // if the link button is clicked
+        var newTab = url;
+        chrome.tabs.create({url: newTab}, function(tab) { 
+          // after creating the tab, add it's ID and URL to open
+            open[tab.id] = name;
+        });
+      }
     });
 }
 
