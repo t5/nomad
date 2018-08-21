@@ -19,7 +19,7 @@
       "128": "icons/extension_icon128.png"
     }
   },
-  "permissions": ["storage", "tabs", "<all_urls>"],
+  "permissions": ["storage", "activeTab"],
   "background": {
     "persistent": true,
     "scripts": ["background.js"]
