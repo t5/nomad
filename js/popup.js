@@ -1,3 +1,13 @@
+// count each use of extension, with each use defined as each time the menu is opened
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-119305601-2']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = 'https://ssl.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
 
 function setup() {
     setupLinks();
@@ -27,7 +37,7 @@ function setupLinks() {
           openDiv.classList.add("badge-primary");
           openDiv.classList.add("badge-pill");
           openDiv.textContent = "open";
-          openDiv.classList.add("mr-auto");
+          openDiv.classList.add("ml-auto");
           openDiv.classList.add("mr-1");
           elem.appendChild(openDiv);
         }

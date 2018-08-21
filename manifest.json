@@ -2,6 +2,7 @@
   "manifest_version": 2,
   "name": "Nomad",
   "version": "0.1",
+  "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
 
   "description": "Create bookmarks that can be updated.",
   "icons": {
@@ -19,14 +20,10 @@
       "128": "icons/extension_icon128.png"
     }
   },
-  "permissions": ["storage", "activeTab"],
+  "permissions": ["storage", "activeTab", "<all_urls>"],
   "background": {
     "persistent": true,
-    "scripts": ["background.js"]
+    "scripts": ["js/background.js"]
   },
-  "content_scripts": [{
-      "matches": ["<all_urls>"],
-      "js": ["contentScript.js"]
-  }],
-  "web_accessible_resources": ["icons/favicon.ico"]
+  "web_accessible_resources": ["js/contentScript.js", "icons/favicon.ico"]
 }

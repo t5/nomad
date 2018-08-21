@@ -6,13 +6,29 @@ chrome.runtime.onInstalled.addListener(function() {
               google: "https://google.com", 
               ucla: "https://ucla.edu"};
   chrome.storage.sync.set({"bookmarks": bookmarks});
+
+  updateBadge();
 });
 
 function updateTitleFav(tabId) {
-  chrome.tabs.executeScript(tabId, {file: 'contentScript.js'}, function() {
-    chrome.tabs.sendMessage(tabId, {tabName: open[tabId],
+  chrome.tabs.executeScript(tabId, {file: 'js/contentScript.js'}, function() {
+    if (chrome.runtime.lastError) {
+      console.log(chrome.runtime.lastError);
+    } else {
+      chrome.tabs.sendMessage(tabId, {tabName: open[tabId],
                                     fav: chrome.runtime.getURL("icons/favicon.ico")});
+    }
   });
+}
+
+function updateBadge() {
+  var num = Object.keys(open).length
+  if (num >= 1) {
+    chrome.browserAction.setBadgeText({text: num.toString()});
+  }
+  else {
+    chrome.browserAction.setBadgeText({text: ""});
+  }
 }
 
 // when bookmark tabs are updated, open obj is also updated
@@ -36,6 +52,7 @@ chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
   if (open.hasOwnProperty(tabId)) {
     // remove the closed tab from the open tabs
     delete open[tabId];
+    updateBadge();
   }
 });
 
@@ -56,6 +73,7 @@ function openTab(elem, url, name){
       chrome.tabs.create({url: newTab}, function(tab) { 
         // after creating the tab, add it's ID and URL to open
           open[tab.id] = name;
+          updateBadge();
       });
     }
   });
@@ -79,6 +97,17 @@ function removeBookmark(elem, name, callback) {
       currBookmarks = result.bookmarks;
       delete currBookmarks[name];
       chrome.storage.sync.set({"bookmarks": currBookmarks});
+      // access the array of open tabs
+      var clickedTabId = Object.entries(open).find(i => i[1] === name);
+      if (clickedTabId) {
+        if (open.hasOwnProperty(clickedTabId[0])) {
+          // if deleting a currently-opened bookmark, reload the open tab to remove favicon/title
+          chrome.tabs.executeScript(parseInt(clickedTabId[0], 10), {code: "window.location.reload()"});
+          // remove the closed tab from the open tabs
+          delete open[clickedTabId[0]];
+          updateBadge();
+        }
+      }
       callback();
     });
   });
